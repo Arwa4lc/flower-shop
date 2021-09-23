@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Joi = require("joi");
 const mongooseAutoIncrement = require("mongoose-auto-increment");
 
 mongooseAutoIncrement.initialize(mongoose.connection);
@@ -11,6 +12,13 @@ const flowerSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
+function dataValidate(flower) {
+  const schema = Joi.object({
+    name: Joi.string().required(),
+  });
+
+  return schema.validate(flower);
+}
 
 flowerSchema.set("toJSON", {
   virtuals: true,
@@ -30,3 +38,4 @@ flowerSchema.plugin(mongooseAutoIncrement.plugin, {
 
 const Flower = mongoose.model("Flower", flowerSchema);
 exports.Flower = Flower;
+exports.dataValidate = dataValidate;

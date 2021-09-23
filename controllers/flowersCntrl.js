@@ -1,10 +1,12 @@
-const { Flower } = require("../models/flowers");
+const { Flower, dataValidate } = require("../models/flowers");
 
 exports.getAll = async (req, res, next) => {
   try {
     const flowers = await Flower.find({})
       .skip((req.query.pageNo - 1) * req.query.pageSize)
       .limit(+req.query.pageSize);
+
+    if (flowers.length === 0) return res.status(404).json("No data exists");
     res.status(200).json(flowers);
   } catch (error) {
     next(error);
@@ -25,6 +27,9 @@ exports.getById = async (req, res, next) => {
 
 exports.newFlower = async (req, res, next) => {
   try {
+    const { error } = dataValidate(req.body);
+    if (error) return res.status(400).json(error.details[0].message);
+
     const flower = await Flower(req.body).save();
     res.status(201).json(flower);
   } catch (error) {
