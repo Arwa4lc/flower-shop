@@ -2,9 +2,12 @@ const { Flower, dataValidate } = require("../models/flowers");
 
 exports.getAll = async (req, res, next) => {
   try {
+    let page = req.query.pageNo || 1;
+    let pageSize = req.query.pageSize || 10;
+
     const flowers = await Flower.find({})
-      .skip((req.query.pageNo - 1) * req.query.pageSize)
-      .limit(+req.query.pageSize);
+      .skip((page - 1) * pageSize)
+      .limit(+pageSize);
 
     if (flowers.length === 0) return res.status(404).json("No data exists");
     res.status(200).json(flowers);
